@@ -6,6 +6,7 @@ import RegisterPage from "./pages/auth/RegisterPage"
 import BadgeCard from "./components/BadgeCard"
 import ProfilePage from "./profile/ProfilePage"
 import EditProfileForm from "./profile/EditProfileForm"
+import PublicProfileView from "./profile/PublicProfileView"
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/badge" element={<BadgeCard niveau="Confirmé" />} />
         <Route path="/edit-profile" element={<EditProfileForm />} />
+        <Route path="/public-profile/:chefId" element={<PublicProfileView />} />
       </Routes>
     </BrowserRouter>
   )

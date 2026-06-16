@@ -11,7 +11,7 @@ export default function LoginPage() {
  const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     // backend plus tard
-    navigate("/profile")
+    navigate("/feed")
   }
 
   return (

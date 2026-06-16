@@ -115,13 +115,20 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Bouton déconnexion */}
-        <button
-          onClick={() => navigate("/")}
-          className="w-full py-3 border border-red-300 text-red-400 rounded-xl text-sm font-medium hover:bg-red-50 transition"
-        >
-          Se déconnecter
-        </button>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <button
+            onClick={() => navigate("/feed")}
+            className="w-full py-3 rounded-xl bg-[#1A1A2E] text-[#F5F0E8] text-sm font-medium hover:bg-[#2a2a4e] transition"
+          >
+            Retour au feed
+          </button>
+          <button
+            onClick={() => navigate("/")}
+            className="w-full py-3 border border-red-300 text-red-400 rounded-xl text-sm font-medium hover:bg-red-50 transition"
+          >
+            Se déconnecter
+          </button>
+        </div>
 
       </div>
     </div>

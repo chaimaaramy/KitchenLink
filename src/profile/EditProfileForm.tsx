@@ -6,20 +6,36 @@ import { useNavigate } from "react-router-dom"
 export default function EditProfileForm() {
   const navigate = useNavigate()
 
+  const getStoredUser = () => {
+    try {
+      const stored = localStorage.getItem("chef")
+      if (!stored) return null
+      return JSON.parse(stored)
+    } catch {
+      return null
+    }
+  }
+
+  const storedUser = getStoredUser()
+  const fullName = storedUser?.name || ""
+  const [prenom, nomPart] = fullName.trim().split(/\s+/)
+  const firstName = prenom || ""
+  const lastName = nomPart ? nomPart : ""
+
   const [form, setForm] = useState({
-    prenom: "Jean",
-    nom: "Dupont",
-    email: "jean@chef.com",
-    specialite: "Cuisine française",
-    restaurant: "Le Gourmet",
-    ville: "Casablanca",
-    experience: "10",
-    bio: "Chef passionné avec 10 ans d'expérience dans la gastronomie française.",
+    prenom: firstName,
+    nom: lastName,
+    email: storedUser?.email || "",
+    specialite: storedUser?.specialite || "",
+    restaurant: storedUser?.restaurant || "",
+    ville: storedUser?.ville || "",
+    experience: String(storedUser?.experience || 0),
+    bio: storedUser?.bio || "",
   })
 
   const [photo, setPhoto] = useState<File | null>(null)
   const [certifFile, setCertifFile] = useState<File | null>(null)
-  const [preview, setPreview] = useState<string>("")
+  const [preview, setPreview] = useState<string>(storedUser?.photo || "")
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
@@ -27,18 +43,37 @@ export default function EditProfileForm() {
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
-    if (file) {
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : ""
       setPhoto(file)
-      setPreview(URL.createObjectURL(file))
+      setPreview(result)
     }
+    reader.readAsDataURL(file)
   }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // backend plus tard
-    console.log("Profil mis à jour :", form)
-    console.log("Nouvelle photo :", photo)
-    console.log("Nouvelle certification :", certifFile)
+
+    const stored = localStorage.getItem("chef")
+    const currentUser = stored ? JSON.parse(stored) : {}
+
+    const updatedUser = {
+      ...currentUser,
+      name: `${form.prenom} ${form.nom}`.trim(),
+      email: form.email,
+      specialite: form.specialite,
+      restaurant: form.restaurant,
+      ville: form.ville,
+      experience: Number(form.experience) || 0,
+      bio: form.bio,
+      photo: preview || currentUser.photo || "",
+      certification: certifFile?.name || currentUser.certification || "",
+    }
+
+    localStorage.setItem("chef", JSON.stringify(updatedUser))
     navigate("/profile")
   }
 
@@ -57,7 +92,7 @@ export default function EditProfileForm() {
           <h1 className="text-2xl font-bold text-[#1A1A2E]">Modifier mon profil</h1>
         </div>
 
-        <div className="bg-white rounded-2xl border border-[#e0d8cc] p-8 space-y-5">
+        <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-[#e0d8cc] p-8 space-y-5">
 
           {/* Photo de profil */}
           <div className="flex items-center gap-5">
@@ -237,14 +272,13 @@ export default function EditProfileForm() {
             </button>
             <button
               type="submit"
-              onClick={handleSubmit}
               className="flex-1 py-3 bg-[#1A1A2E] text-[#F5F0E8] rounded-xl text-sm font-medium hover:bg-[#2a2a4e] transition"
             >
               Sauvegarder
             </button>
           </div>
 
-        </div>
+        </form>
       </div>
     </div>
   )

@@ -10,14 +10,31 @@ export default function CreatePostModal({ open, onClose, onCreate }: Props) {
   const [title, setTitle] = useState("")
   const [text, setText] = useState("")
   const [image, setImage] = useState("")
+  const [imagePreview, setImagePreview] = useState("")
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = () => {
+      const result = typeof reader.result === "string" ? reader.result : ""
+      setImage(result)
+      setImagePreview(result)
+    }
+    reader.readAsDataURL(file)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!title.trim() || !text.trim()) return
-    onCreate(title.trim(), text.trim(), image.trim() || "https://images.unsplash.com/photo-1498579809087-ef1e558fd1d7?auto=format&fit=crop&w=800&q=80")
+
+    const finalImage = image.trim() || "https://images.unsplash.com/photo-1498579809087-ef1e558fd1d7?auto=format&fit=crop&w=800&q=80"
+    onCreate(title.trim(), text.trim(), finalImage)
     setTitle("")
     setText("")
     setImage("")
+    setImagePreview("")
   }
 
   if (!open) return null
@@ -64,14 +81,27 @@ export default function CreatePostModal({ open, onClose, onCreate }: Props) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">URL de l'image</label>
+            <label className="block text-xs font-semibold uppercase text-gray-500 mb-2">Photo du plat</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full rounded-2xl border border-[#e0d8cc] bg-[#FAFAF8] px-4 py-3 text-sm text-[#1A1A2E] file:mr-3 file:rounded-xl file:border-0 file:bg-[#1A1A2E] file:px-4 file:py-2 file:text-sm file:text-white"
+            />
+            <p className="mt-2 text-xs text-gray-500">Tu peux aussi coller une URL si tu préfères.</p>
             <input
               value={image}
               onChange={(e) => setImage(e.target.value)}
               placeholder="https://..."
-              className="w-full rounded-2xl border border-[#e0d8cc] bg-[#FAFAF8] px-4 py-3 text-sm text-[#1A1A2E] focus:outline-none focus:border-[#C49A3C]"
+              className="mt-2 w-full rounded-2xl border border-[#e0d8cc] bg-[#FAFAF8] px-4 py-3 text-sm text-[#1A1A2E] focus:outline-none focus:border-[#C49A3C]"
             />
           </div>
+
+          {imagePreview && (
+            <div>
+              <img src={imagePreview} alt="Aperçu du plat" className="h-48 w-full rounded-2xl object-cover" />
+            </div>
+          )}
 
           <div className="flex flex-col gap-3 pt-2 sm:flex-row sm:justify-end">
             <button

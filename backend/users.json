@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1781785439589,
+    "email": "chef1@test.com",
+    "password": "pass123",
+    "name": "Jean Dupont",
+    "specialite": "Cuisine fran�aise",
+    "restaurant": "Le Gourmet",
+    "ville": "Casablanca",
+    "experience": 10,
+    "bio": "Chef passionn�",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior"
+  },
+  {
+    "id": 1781785488324,
+    "email": "chef2@test.com",
+    "password": "pass123",
+    "name": "Marie Durand",
+    "specialite": "Cuisine italienne",
+    "restaurant": "La Dolce Vita",
+    "ville": "Rabat",
+    "experience": 8,
+    "bio": "Chef talentueuse",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior"
+  },
+  {
+    "id": 1781786891585,
+    "email": "ramy@gmail.com",
+    "password": "ramy1234",
+    "name": "chama ramy",
+    "specialite": "Cuisine française",
+    "restaurant": "",
+    "ville": "",
+    "experience": "2",
+    "bio": "",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior"
+  }
+]

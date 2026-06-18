@@ -21,20 +21,40 @@ type Chef = {
 export default function ProfilePage() {
   const navigate = useNavigate()
 
-  // données fictives pour l'instant — backend plus tard
-  const [chef] = useState<Chef>({
-    prenom: "Jean",
-    nom: "Dupont",
-    email: "jean@chef.com",
-    specialite: "Cuisine française",
-    restaurant: "Le Gourmet",
-    ville: "Casablanca",
-    experience: 10,
-    bio: "Chef passionné avec 10 ans d'expérience dans la gastronomie française. Formé à l'école Ferrandi Paris.",
-    photo: "",
-    certification: "Diplôme Ferrandi Paris.pdf",
-    badge: "Étoilé",
-  })
+  const [chef] = useState<Chef>(() => {
+  const stored = localStorage.getItem('chef');
+  if (stored) {
+    const data = JSON.parse(stored);
+ 
+    const [prenom, ...nomParts] = data.name.split(' ');
+    return {
+      prenom,
+      nom: nomParts.join(' ') || 'Unknown',
+      email: data.email,
+      specialite: data.specialite || '',
+      restaurant: data.restaurant || '',
+      ville: data.ville || '',
+      experience: data.experience || 0,
+      bio: data.bio || '',
+      photo: data.photo || '',
+      certification: data.certification || '',
+      badge: data.badge || 'Junior'
+    };
+  }
+  return {
+    prenom: 'Guest',
+    nom: 'User',
+    email: '',
+    specialite: '',
+    restaurant: '',
+    ville: '',
+    experience: 0,
+    bio: '',
+    photo: '',
+    certification: '',
+    badge: 'Junior'
+  };
+});
 
   return (
     <div className="min-h-screen bg-[#F5F0E8] px-4 py-10">
@@ -80,17 +100,19 @@ export default function ProfilePage() {
 
             {/* Infos */}
             <div className="mt-4 space-y-2 text-sm text-gray-600">
-              <p>🍽️ <span className="font-medium">{chef.restaurant}</span></p>
-              <p>📍 <span className="font-medium">{chef.ville}</span></p>
-              <p>⏱️ <span className="font-medium">{chef.experience} ans</span> d'expérience</p>
-              <p>✉️ {chef.email}</p>
+              {chef.restaurant && <p>🍽️ <span className="font-medium">{chef.restaurant}</span></p>}
+              {chef.ville && <p>📍 <span className="font-medium">{chef.ville}</span></p>}
+              {chef.experience > 0 && <p>⏱️ <span className="font-medium">{chef.experience} ans</span> d'expérience</p>}
+              {chef.email && <p>✉️ {chef.email}</p>}
             </div>
 
             {/* Bio */}
-            <div className="mt-5 p-4 bg-[#F5F0E8] rounded-xl">
-              <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Bio</p>
-              <p className="text-sm text-gray-700 leading-relaxed">{chef.bio}</p>
-            </div>
+            {chef.bio && (
+              <div className="mt-5 p-4 bg-[#F5F0E8] rounded-xl">
+                <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-1">Bio</p>
+                <p className="text-sm text-gray-700 leading-relaxed">{chef.bio}</p>
+              </div>
+            )}
 
           </div>
         </div>

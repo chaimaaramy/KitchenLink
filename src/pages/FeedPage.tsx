@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import CreatePostModal from "../components/CreatePostModal.tsx"
 import NotificationBell from "../components/NotificationBell.tsx"
@@ -184,6 +184,21 @@ function IconProfile() {
 export default function FeedPage() {
   const navigate = useNavigate()
   const [posts, setPosts] = useState<PostData[]>(initialPosts)
+    useEffect(() => {
+      const fetchPosts = async () => {
+        try {
+          const res = await fetch('http://localhost:5000/api/posts')
+          const data = await res.json()
+          if (Array.isArray(data.posts)) {
+            setPosts(data.posts)
+          }
+        } catch (err) {
+          console.error('Erreur fetch posts:', err)
+        }
+      }
+
+      fetchPosts()
+    }, [])
   const [notifications, setNotifications] = useState<NotificationData[]>(initialNotifications)
   const [showCreateModal, setShowCreateModal] = useState(false)
   const [filterSpecialite, setFilterSpecialite] = useState("Tous")
@@ -281,35 +296,47 @@ export default function FeedPage() {
     ])
   }
 
-  const handleCreatePost = (title: string, text: string, image: string) => {
-    const newPost: PostData = {
-      id: `post-${Date.now()}`,
-      chefName: "Chef Link",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=60",
-      specialite: "Cuisine fusion",
-      region: "Tunis",
-      title,
-      text,
-      image,
-      likes: 0,
-      liked: false,
-      comments: [],
-      shares: 0,
-      createdAt: "À l'instant",
-    }
+  const handleCreatePost = async (title: string, text: string, image: string) => {
+    try {
+      const storedUser = localStorage.getItem("chef")
+      const currentUser = storedUser ? JSON.parse(storedUser) : {}
 
-    setPosts((current) => [newPost, ...current])
-    setShowCreateModal(false)
-    setNotifications((current) => [
-      {
-        id: `n-${Date.now()}`,
-        type: "follow",
-        message: "Une nouvelle publication est en ligne.",
-        time: "À l'instant",
-        read: false,
-      },
-      ...current,
-    ])
+      const response = await fetch("http://localhost:5000/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          text,
+          image,
+          chefName: currentUser.name || "Chef Link",
+          avatar: currentUser.photo || "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=60",
+          specialite: currentUser.specialite || "Cuisine fusion",
+          region: currentUser.ville || "Tunis",
+          authorEmail: currentUser.email || "",
+        }),
+      })
+
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || "Impossible de publier")
+      }
+
+      const newPost = data.post as PostData
+      setPosts((current) => [newPost, ...current])
+      setShowCreateModal(false)
+      setNotifications((current) => [
+        {
+          id: `n-${Date.now()}`,
+          type: "follow",
+          message: "Une nouvelle publication est en ligne.",
+          time: "À l'instant",
+          read: false,
+        },
+        ...current,
+      ])
+    } catch (error) {
+      console.error("Erreur lors de la création du post:", error)
+    }
   }
 
   const handleToggleNotifications = () => {

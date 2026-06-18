@@ -17,17 +17,52 @@ export default function RegisterPage() {
   })
 
   const [certifFile, setCertifFile] = useState<File | null>(null)
+  const [error, setError] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const navigate = useNavigate()
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value })
   }
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log("Nouveau chef :", form)
-    console.log("Certification PDF :", certifFile)
-    navigate("/profile")
+    setError("")
+    setIsSubmitting(true)
+
+    try {
+      const payload = {
+        email: form.email,
+        password: form.password,
+        name: `${form.prenom} ${form.nom}`.trim(),
+        specialite: form.specialite,
+        restaurant: form.restaurant,
+        ville: form.ville,
+        experience: form.experience || 0,
+        bio: form.bio,
+      }
+
+      const response = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Impossible de créer le compte")
+      }
+
+      console.log("Compte créé :", data)
+      navigate("/")
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Une erreur est survenue")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -215,11 +250,16 @@ export default function RegisterPage() {
             />
           </div>
 
+          {error && (
+            <p className="text-sm text-red-600 text-center">{error}</p>
+          )}
+
           <button
             type="submit"
-            className="w-full py-3 bg-[#1A1A2E] text-[#F5F0E8] rounded-xl font-medium text-sm tracking-wide hover:bg-[#2a2a4e] transition"
+            disabled={isSubmitting}
+            className="w-full py-3 bg-[#1A1A2E] text-[#F5F0E8] rounded-xl font-medium text-sm tracking-wide hover:bg-[#2a2a4e] transition disabled:opacity-60"
           >
-            Créer mon profil
+            {isSubmitting ? "Création en cours..." : "Créer mon profil"}
           </button>
 
         </form>

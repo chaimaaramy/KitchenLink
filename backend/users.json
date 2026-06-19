@@ -11,7 +11,11 @@
     "bio": "Chef passionn�",
     "photo": "",
     "certification": "",
-    "badge": "Junior"
+    "badge": "Junior",
+    "followers": [
+      "ramy@gmail.com"
+    ],
+    "following": []
   },
   {
     "id": 1781785488324,
@@ -25,7 +29,8 @@
     "bio": "Chef talentueuse",
     "photo": "",
     "certification": "",
-    "badge": "Junior"
+    "badge": "Junior",
+    "followers": []
   },
   {
     "id": 1781786891585,
@@ -39,6 +44,9 @@
     "bio": "",
     "photo": "",
     "certification": "",
-    "badge": "Junior"
+    "badge": "Junior",
+    "following": [
+      "1781785439589"
+    ]
   }
 ]

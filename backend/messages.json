@@ -1,0 +1,37 @@
+[
+  {
+    "id": "msg-1781897571337",
+    "fromEmail": "chef2@test.com",
+    "toEmail": "chef1@test.com",
+    "content": "salut",
+    "createdAt": "À l'instant"
+  },
+  {
+    "id": "msg-1781897363979",
+    "fromEmail": "chef1@test.com",
+    "toEmail": "chef2@test.com",
+    "content": "slm",
+    "createdAt": "À l'instant"
+  },
+  {
+    "id": "msg-1781893215954",
+    "fromEmail": "chef1@test.com",
+    "toEmail": "chef2@test.com",
+    "content": "salut",
+    "createdAt": "À l'instant"
+  },
+  {
+    "id": "msg-1781891824837",
+    "fromEmail": "ramy@gmail.com",
+    "toEmail": "chef1@test.com",
+    "content": "Salut",
+    "createdAt": "À l'instant"
+  },
+  {
+    "id": "msg-1781891784522",
+    "fromEmail": "ramy@gmail.com",
+    "toEmail": "chef1@test.com",
+    "content": "Salut",
+    "createdAt": "À l'instant"
+  }
+]

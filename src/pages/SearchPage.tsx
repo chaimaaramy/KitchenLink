@@ -2,9 +2,21 @@
 // Page de recherche de chefs par nom, spécialité, ville ou restaurant.
 // Elle filtre la liste mockée de chefs en temps réel selon les critères saisis.
 
-import { useState } from "react";
-import { chefsMock } from "../data/chefsMock";
+import { useState, useEffect } from "react";
 import ChefCard from "../components/ChefCard";
+
+type Chef = {
+  id: string;
+  name: string;
+  specialty: string;
+  restaurant: string;
+  city: string;
+  avatar: string;
+  bio: string;
+  followers: string[];
+  following: string[];
+  email?: string;
+};
 
 
 export default function SearchPage() {
@@ -12,23 +24,51 @@ export default function SearchPage() {
   const [specialty, setSpecialty] = useState("");
   const [city, setCity] = useState("");
   const [restaurant, setRestaurant] = useState("");
+  const [results, setResults] = useState<Chef[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchChefs = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (query) params.append("q", query);
+        if (specialty) params.append("specialite", specialty);
+        if (city) params.append("ville", city);
+        if (restaurant) params.append("restaurant", restaurant);
+        const res = await fetch(`http://localhost:5000/api/search?${params.toString()}`);
+        const data = await res.json();
+        if (Array.isArray(data.chefs)) {
+          setResults(
+            data.chefs.map((user: any) => ({
+              id: String(user.id),
+              name: user.name || "",
+              specialty: user.specialite || "",
+              restaurant: user.restaurant || "",
+              city: user.ville || "",
+              avatar: user.photo || "https://i.pravatar.cc/150?img=47",
+              bio: user.bio || "",
+              followers: Array.isArray(user.followers) ? user.followers : [],
+              following: Array.isArray(user.following) ? user.following : [],
+              email: user.email || "",
+            })),
+          );
+        } else {
+          setResults([]);
+        }
+      } catch (error) {
+        console.error("Erreur recherche chefs :", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchChefs();
+  }, [query, specialty, city, restaurant]);
 
   // Filtrage en temps réel : on compare chaque champ en minuscule pour ignorer la casse
-  const results = chefsMock.filter((chef) => {
-    const matchQuery =
-      query === "" ||
-      chef.name.toLowerCase().includes(query.toLowerCase());
-    const matchSpecialty =
-      specialty === "" ||
-      chef.specialty.toLowerCase().includes(specialty.toLowerCase());
-    const matchCity =
-      city === "" ||
-      chef.city.toLowerCase().includes(city.toLowerCase());
-    const matchRestaurant =
-      restaurant === "" ||
-      chef.restaurant.toLowerCase().includes(restaurant.toLowerCase());
-    return matchQuery && matchSpecialty && matchCity && matchRestaurant;
-  });
+  const displayedResults = results;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -71,13 +111,15 @@ export default function SearchPage() {
       </div>
 
       {/* Résultats */}
-      {results.length === 0 ? (
+      {loading ? (
+        <p className="text-gray-500 text-center mt-10">Recherche en cours...</p>
+      ) : displayedResults.length === 0 ? (
         <p className="text-gray-500 text-center mt-10">
           Aucun chef trouvé. Essaie d'autres mots-clés.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {results.map((chef) => (
+          {displayedResults.map((chef) => (
             <ChefCard key={chef.id} chef={chef} />
           ))}
         </div>

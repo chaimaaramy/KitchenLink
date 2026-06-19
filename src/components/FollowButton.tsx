@@ -12,7 +12,20 @@ interface Props {
 // Helpers localStorage
 function getFollowing(): string[] {
   try {
-    return JSON.parse(localStorage.getItem("following") || "[]");
+    const storedFollowing = localStorage.getItem("following");
+    if (storedFollowing) {
+      return JSON.parse(storedFollowing);
+    }
+
+    const storedChef = localStorage.getItem("chef");
+    if (storedChef) {
+      const chef = JSON.parse(storedChef);
+      if (Array.isArray(chef.following)) {
+        return chef.following;
+      }
+    }
+
+    return [];
   } catch {
     return [];
   }
@@ -20,6 +33,17 @@ function getFollowing(): string[] {
 
 function saveFollowing(ids: string[]) {
   localStorage.setItem("following", JSON.stringify(ids));
+
+  const storedChef = localStorage.getItem("chef");
+  if (storedChef) {
+    try {
+      const chef = JSON.parse(storedChef);
+      chef.following = ids;
+      localStorage.setItem("chef", JSON.stringify(chef));
+    } catch {
+      // ignore JSON parse error
+    }
+  }
 }
 
 export default function FollowButton({ chefId }: Props) {
@@ -31,16 +55,53 @@ export default function FollowButton({ chefId }: Props) {
     setIsFollowing(following.includes(chefId));
   }, [chefId]);
 
-  const toggle = () => {
+  const toggle = async () => {
+    const storedUser = localStorage.getItem('chef');
+    const currentUser = storedUser ? JSON.parse(storedUser) : null;
+
     const following = getFollowing();
     let updated: string[];
 
     if (isFollowing) {
-      // Unfollow : on retire l'id
-      updated = following.filter((id) => id !== chefId);
+      try {
+        if (currentUser?.email) {
+          const response = await fetch(`http://localhost:5000/api/unfollow/${chefId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ followerEmail: currentUser.email }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Impossible de ne plus suivre le chef');
+          }
+          updated = following.filter((id) => id !== chefId);
+        } else {
+          updated = following.filter((id) => id !== chefId);
+        }
+      } catch (error) {
+        console.error('Erreur unfollow:', error);
+        return;
+      }
     } else {
-      // Follow : on ajoute l'id
-      updated = [...following, chefId];
+      try {
+        if (currentUser?.email) {
+          const response = await fetch(`http://localhost:5000/api/follow/${chefId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ followerEmail: currentUser.email }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Impossible de suivre le chef');
+          }
+          updated = [...following, chefId];
+        } else {
+          updated = [...following, chefId];
+        }
+      } catch (error) {
+        console.error('Erreur follow:', error);
+        return;
+      }
     }
 
     saveFollowing(updated);

@@ -30,9 +30,10 @@ type Props = {
   onLike: () => void
   onComment: (postId: string, content: string) => void
   onShare: () => void
+  onDelete?: () => void
 }
 
-export default function PostCard({ post, onLike, onComment, onShare }: Props) {
+export default function PostCard({ post, onLike, onComment, onShare, onDelete }: Props) {
   const [showComments, setShowComments] = useState(false)
 
   return (
@@ -77,6 +78,15 @@ export default function PostCard({ post, onLike, onComment, onShare }: Props) {
         >
           🔄 {post.shares} partages
         </button>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={onDelete}
+            className="rounded-full border border-red-300 bg-white px-4 py-2 text-sm text-red-600 transition hover:bg-red-50"
+          >
+            Supprimer
+          </button>
+        )}
       </div>
 
       {showComments && (

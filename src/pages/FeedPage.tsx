@@ -30,7 +30,7 @@ type PostData = {
 
 type NotificationData = {
   id: string
-  type: "follow" | "like" | "comment"
+  type: "follow" | "like" | "comment" | "message"
   message: string
   time: string
   read: boolean
@@ -89,53 +89,7 @@ const initialPosts: PostData[] = [
   },
 ]
 
-const initialNotifications: NotificationData[] = [
-  {
-    id: "n1",
-    type: "follow",
-    message: "Sara a commencé à vous suivre.",
-    time: "10m",
-    read: false,
-  },
-  {
-    id: "n2",
-    type: "like",
-    message: "Votre photo de plat a reçu un nouveau like.",
-    time: "45m",
-    read: false,
-  },
-  {
-    id: "n3",
-    type: "comment",
-    message: "Pierre a commenté votre recette.",
-    time: "1h",
-    read: true,
-  },
-]
-
-const trendingItems = [
-  {
-    id: "t1",
-    dish: "Boulettes de poulet thaï",
-    chef: "Léa Nguyen",
-    likes: 220,
-    category: "Asiatique",
-  },
-  {
-    id: "t2",
-    dish: "Raviolis ricotta-épinards",
-    chef: "Matteo Rossi",
-    likes: 198,
-    category: "Italienne",
-  },
-  {
-    id: "t3",
-    dish: "Mousse café noisette",
-    chef: "Emma Dubois",
-    likes: 176,
-    category: "Pâtisserie",
-  },
-]
+const initialNotifications: NotificationData[] = []
 
 // Icônes SVG inline pour la navbar (pas de dépendance externe)
 function IconFeed() {
@@ -187,7 +141,13 @@ export default function FeedPage() {
     useEffect(() => {
       const fetchPosts = async () => {
         try {
-          const res = await fetch('http://localhost:5000/api/posts')
+          const storedUser = localStorage.getItem('chef')
+          const currentUser = storedUser ? JSON.parse(storedUser) : null
+          const params = new URLSearchParams()
+          if (currentUser?.email) {
+            params.set('userEmail', currentUser.email)
+          }
+          const res = await fetch(`http://localhost:5000/api/posts?${params.toString()}`)
           const data = await res.json()
           if (Array.isArray(data.posts)) {
             setPosts(data.posts)
@@ -197,7 +157,33 @@ export default function FeedPage() {
         }
       }
 
+      const fetchNotifications = async () => {
+        try {
+          const storedUser = localStorage.getItem('chef')
+          const currentUser = storedUser ? JSON.parse(storedUser) : null
+          if (!currentUser?.email) return
+
+          const response = await fetch(`http://localhost:5000/api/notifications?userEmail=${encodeURIComponent(currentUser.email)}`)
+          const data = await response.json()
+          if (Array.isArray(data.notifications)) {
+            setNotifications(data.notifications)
+          }
+        } catch (err) {
+          console.error('Erreur fetch notifications:', err)
+        }
+      }
+
       fetchPosts()
+      fetchNotifications()
+
+      const handleNotificationsUpdated = () => {
+        fetchNotifications()
+      }
+
+      window.addEventListener('notificationsUpdated', handleNotificationsUpdated)
+      return () => {
+        window.removeEventListener('notificationsUpdated', handleNotificationsUpdated)
+      }
     }, [])
   const [notifications, setNotifications] = useState<NotificationData[]>(initialNotifications)
   const [showCreateModal, setShowCreateModal] = useState(false)
@@ -221,6 +207,21 @@ export default function FeedPage() {
 
   const unreadCount = notifications.filter((item) => !item.read).length
 
+  const trendingItems = useMemo(
+    () =>
+      [...posts]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, 3)
+        .map((post) => ({
+          id: post.id,
+          dish: post.title,
+          chef: post.chefName,
+          likes: post.likes,
+          category: post.specialite || post.region || "Général",
+        })),
+    [posts],
+  )
+
   const filteredPosts = useMemo(() => {
     const filtered = posts.filter((post) => {
       const matchesSpecialite = filterSpecialite === "Tous" || post.specialite === filterSpecialite
@@ -235,46 +236,73 @@ export default function FeedPage() {
     return [...filtered].sort((a, b) => (a.createdAt > b.createdAt ? -1 : 1))
   }, [posts, filterSpecialite, filterRegion, filterSort])
 
-  const handleToggleLike = (postId: string) => {
-    setPosts((current) =>
-      current.map((post) => {
-        if (post.id !== postId) return post
-        return {
-          ...post,
-          liked: !post.liked,
-          likes: post.liked ? post.likes - 1 : post.likes + 1,
-        }
-      }),
-    )
+  const handleToggleLike = async (postId: string) => {
+    const storedUser = localStorage.getItem('chef')
+    const currentUser = storedUser ? JSON.parse(storedUser) : null
+
+    if (!currentUser?.email) {
+      setPosts((current) =>
+        current.map((post) => {
+          if (post.id !== postId) return post
+          return {
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+          }
+        }),
+      )
+      return
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5000/api/posts/${postId}/like`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail: currentUser.email }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || 'Impossible de liker le post')
+      }
+      const updatedPost = data.post as PostData
+      setPosts((current) => current.map((post) => (post.id === postId ? updatedPost : post)))
+    } catch (error) {
+      console.error('Erreur like post :', error)
+    }
   }
 
-  const handleAddComment = (postId: string, content: string) => {
-    setPosts((current) =>
-      current.map((post) => {
-        if (post.id !== postId) return post
-        const newComment: CommentData = {
-          id: `${postId}-comment-${post.comments.length + 1}`,
-          author: "Vous",
+  const handleAddComment = async (postId: string, content: string) => {
+    const storedUser = localStorage.getItem("chef")
+    const currentUser = storedUser ? JSON.parse(storedUser) : {}
+    try {
+      const response = await fetch(`http://localhost:5000/api/posts/${postId}/comment`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          author: currentUser.name || "Vous",
           content,
+          userEmail: currentUser.email,
+        }),
+      })
+      const data = await response.json()
+      if (!response.ok) {
+        throw new Error(data.error || "Impossible d'ajouter le commentaire")
+      }
+      const updatedPost = data.post as PostData
+      setPosts((current) => current.map((post) => (post.id === postId ? updatedPost : post)))
+      setNotifications((current) => [
+        {
+          id: `n-${Date.now()}`,
+          type: "comment",
+          message: "Vous avez répondu à une publication.",
           time: "À l'instant",
-        }
-        return {
-          ...post,
-          comments: [...post.comments, newComment],
-        }
-      }),
-    )
-
-    setNotifications((current) => [
-      {
-        id: `n-${Date.now()}`,
-        type: "comment",
-        message: "Vous avez répondu à une publication.",
-        time: "À l'instant",
-        read: false,
-      },
-      ...current,
-    ])
+          read: false,
+        },
+        ...current,
+      ])
+    } catch (error) {
+      console.error("Erreur ajout commentaire :", error)
+    }
   }
 
   const handleShare = (postId: string) => {
@@ -294,6 +322,33 @@ export default function FeedPage() {
       },
       ...current,
     ])
+  }
+
+  const handleDeletePost = async (postId: string) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/posts/${postId}`, {
+        method: 'DELETE',
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Impossible de supprimer la publication')
+      }
+
+      setPosts((current) => current.filter((post) => post.id !== postId))
+      setNotifications((current) => [
+        {
+          id: `n-${Date.now()}`,
+          type: 'comment',
+          message: 'Une publication a été supprimée.',
+          time: "À l'instant",
+          read: false,
+        },
+        ...current,
+      ])
+    } catch (error) {
+      console.error('Erreur lors de la suppression du post:', error)
+    }
   }
 
   const handleCreatePost = async (title: string, text: string, image: string) => {
@@ -321,7 +376,10 @@ export default function FeedPage() {
         throw new Error(data.error || "Impossible de publier")
       }
 
-      const newPost = data.post as PostData
+      const newPost = {
+        ...(data.post as PostData),
+        liked: false,
+      }
       setPosts((current) => [newPost, ...current])
       setShowCreateModal(false)
       setNotifications((current) => [
@@ -339,11 +397,31 @@ export default function FeedPage() {
     }
   }
 
-  const handleToggleNotifications = () => {
-    setShowNotifications((visible) => !visible)
-    if (!showNotifications) {
-      setNotifications((current) => current.map((item) => ({ ...item, read: true })))
+  const handleToggleNotifications = async () => {
+    const storedUser = localStorage.getItem('chef')
+    const currentUser = storedUser ? JSON.parse(storedUser) : null
+    if (!currentUser?.email) {
+      setShowNotifications((visible) => !visible)
+      return
     }
+
+    if (!showNotifications) {
+      try {
+        const response = await fetch('http://localhost:5000/api/notifications/read', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userEmail: currentUser.email }),
+        })
+        const data = await response.json()
+        if (Array.isArray(data.notifications)) {
+          setNotifications(data.notifications)
+        }
+      } catch (err) {
+        console.error('Erreur marquer notifications comme lues :', err)
+      }
+    }
+
+    setShowNotifications((visible) => !visible)
   }
 
   // Navigation avec mise à jour de l'icône active
@@ -452,6 +530,7 @@ export default function FeedPage() {
                   onLike={() => handleToggleLike(post.id)}
                   onComment={handleAddComment}
                   onShare={() => handleShare(post.id)}
+                  onDelete={() => handleDeletePost(post.id)}
                 />
               ))
             )}

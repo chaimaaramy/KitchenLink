@@ -18,6 +18,7 @@ import SearchPage from "./pages/SearchPage";
 import ExplorePage from "./pages/ExplorePage";
 import MessagingPage from "./pages/MessagingPage";
 import ConnectionsList from "./pages/ConnectionsList";
+import PageLayout from "./components/PageLayout";
 
 function App() {
   return (
@@ -26,17 +27,15 @@ function App() {
         {/* Routes existantes */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/feed" element={<FeedPage />} />
-        <Route path="/badge" element={<BadgeCard niveau="Confirmé" />} />
-        <Route path="/edit-profile" element={<EditProfileForm />} />
-        <Route path="/public-profile/:chefId" element={<PublicProfileView />} />
-
-        {/* [ZAINEB] Nouvelles routes */}
-        <Route path="/search" element={<SearchPage />} />
-        <Route path="/explore" element={<ExplorePage />} />
-        <Route path="/messages" element={<MessagingPage />} />
-        <Route path="/connections" element={<ConnectionsList />} />
+        <Route element={<PageLayout />}>
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/public-profile/:chefId" element={<PublicProfileView />} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/search" element={<SearchPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/messages" element={<MessagingPage />} />
+          <Route path="/connections" element={<ConnectionsList />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

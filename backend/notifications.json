@@ -1,0 +1,72 @@
+[
+  {
+    "id": "notif-1781898626877",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "chef1@test.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781897789043",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "chef1@test.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781897571337",
+    "userEmail": "chef1@test.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "chef2@test.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781897549559",
+    "userEmail": "ramy@gmail.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "chef2@test.com",
+    "relatedPostId": "post-1781804803627"
+  },
+  {
+    "id": "notif-1781897473792",
+    "userEmail": "ramy@gmail.com",
+    "type": "comment",
+    "message": "Marie Durand a commenté votre publication.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "chef2@test.com",
+    "relatedPostId": "post-1781804803627"
+  },
+  {
+    "id": "notif-1781897363980",
+    "userEmail": "chef2@test.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "chef1@test.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781897324981",
+    "userEmail": "ramy@gmail.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "chef1@test.com",
+    "relatedPostId": "post-1781804803627"
+  }
+]

@@ -7,7 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import type { Chef } from "../data/chefsMock";
 
 interface Message {
-  id: number;
+  id: string;
   senderId: string; // "me" ou l'id du chef
   text: string;
   time: string;
@@ -18,53 +18,91 @@ interface Props {
   onClose?: () => void;
 }
 
-// Messages fictifs initiaux pour simuler une vraie conversation
-function getInitialMessages(chefId: string): Message[] {
-  return [
-    {
-      id: 1,
-      senderId: chefId,
-      text: "Bonjour ! Tu as vu la nouvelle recette que j'ai postée ?",
-      time: "10:02",
-    },
-    {
-      id: 2,
-      senderId: "me",
-      text: "Oui ! La présentation est magnifique. Quelle cuisson tu utilises ?",
-      time: "10:05",
-    },
-    {
-      id: 3,
-      senderId: chefId,
-      text: "Cuisson sous vide 48h puis saisie à feu vif 30 secondes.",
-      time: "10:07",
-    },
-  ];
-}
+// Chat messages are loaded from the backend for persistence.
 
 export default function ChatWindow({ chef, onClose }: Props) {
-  const [messages, setMessages] = useState<Message[]>(() =>
-    getInitialMessages(chef.id)
-  );
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const storedUser = localStorage.getItem("chef");
+      const currentUserEmail = storedUser ? JSON.parse(storedUser).email : "";
+      if (!currentUserEmail || !chef.email) {
+        setMessages([]);
+        return;
+      }
+
+      try {
+        const params = new URLSearchParams({
+          userEmail: currentUserEmail,
+          chefEmail: chef.email,
+        });
+        const response = await fetch(`http://localhost:5000/api/messages?${params.toString()}`);
+        const data = await response.json();
+        if (Array.isArray(data.messages)) {
+          setMessages(
+            data.messages.map((message: any) => ({
+              id: String(message.id),
+              senderId: message.fromEmail === currentUserEmail ? "me" : chef.id,
+              text: message.content || "",
+              time: message.createdAt || "",
+            })),
+          );
+        } else {
+          setMessages([]);
+        }
+      } catch (error) {
+        console.error("Erreur récupération messages:", error);
+        setMessages([]);
+      }
+    };
+
+    fetchMessages();
+  }, [chef.email, chef.id]);
 
   // Scroll automatique vers le bas à chaque nouveau message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const text = input.trim();
     if (!text) return;
 
     const now = new Date();
     const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
 
-    setMessages((prev) => [
-      ...prev,
-      { id: Date.now(), senderId: "me", text, time },
-    ]);
+    const storedUser = localStorage.getItem("chef");
+    const currentUser = storedUser ? JSON.parse(storedUser) : {};
+
+    try {
+      const response = await fetch("http://localhost:5000/api/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fromEmail: currentUser.email || "",
+          toEmail: chef.email || "",
+          content: text,
+        }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Impossible d'envoyer le message.");
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        { id: String(data.data.id), senderId: "me", text, time },
+      ]);
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("notificationsUpdated"));
+      }
+    } catch (error) {
+      console.error("Erreur envoi message:", error);
+    }
     setInput("");
   };
 

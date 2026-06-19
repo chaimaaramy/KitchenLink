@@ -1,6 +1,6 @@
 type NotificationData = {
   id: string
-  type: "follow" | "like" | "comment"
+  type: "follow" | "like" | "comment" | "message"
   message: string
   time: string
   read: boolean

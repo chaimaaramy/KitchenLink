@@ -1,6 +1,6 @@
 // src/pages/ExplorePage.tsx
 // Page "Explorer" : suggère des chefs à découvrir via le backend.
-
+// Elle récupère la liste des chefs depuis l'API et filtre les résultats
 import { useEffect, useState } from "react";
 import ChefCard from "../components/ChefCard";
 

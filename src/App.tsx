@@ -14,6 +14,7 @@ import PublicProfileView from "./profile/PublicProfileView";
 import FeedPage from "./pages/FeedPage";
 
 // [ZAINEB] Nouvelles routes — module Réseau & Recherche
+// PageLayout est un composant qui contient la barre de navigation et le footer
 import SearchPage from "./pages/SearchPage";
 import ExplorePage from "./pages/ExplorePage";
 import MessagingPage from "./pages/MessagingPage";

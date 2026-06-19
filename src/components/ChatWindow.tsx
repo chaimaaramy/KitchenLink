@@ -1,120 +1,150 @@
 // src/components/ChatWindow.tsx
-// Fenêtre de chat pour la messagerie directe entre deux chefs.
-// Les messages sont stockés dans le state local React (pas de backend).
-// La structure simule une conversation avec des messages pré-remplis.
+// Fenêtre de chat connectée au backend via http://localhost:5000/api/messages
+// Utilise chef.email (maintenant présent dans l'interface Chef de chefsMock.ts)
 
-import { useState, useRef, useEffect } from "react";
-import type { Chef } from "../data/chefsMock";
+import { useState, useRef, useEffect } from "react"
+import type { Chef } from "../data/chefsMock"
 
 interface Message {
-  id: string;
-  senderId: string; // "me" ou l'id du chef
-  text: string;
-  time: string;
+  id: string
+  senderId: string  // "me" = message envoyé par l'utilisateur connecté
+  text: string
+  time: string
 }
 
 interface Props {
-  chef: Chef;
-  onClose?: () => void;
+  chef: Chef
+  onClose?: () => void
 }
 
-// Chat messages are loaded from the backend for persistence.
+// Récupère l'utilisateur connecté depuis localStorage
+function getCurrentUser() {
+  try {
+    const stored = localStorage.getItem("chef")
+    return stored ? JSON.parse(stored) : null
+  } catch {
+    return null
+  }
+}
 
 export default function ChatWindow({ chef, onClose }: Props) {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState("")
+  const [loadingMessages, setLoadingMessages] = useState(true)
+  const bottomRef = useRef<HTMLDivElement>(null)
 
+  // Chargement des messages depuis le backend au montage
+  // et à chaque changement de chef (si on ouvre une autre conversation)
   useEffect(() => {
     const fetchMessages = async () => {
-      const storedUser = localStorage.getItem("chef");
-      const currentUserEmail = storedUser ? JSON.parse(storedUser).email : "";
-      if (!currentUserEmail || !chef.email) {
-        setMessages([]);
-        return;
+      setLoadingMessages(true)
+      const currentUser = getCurrentUser()
+
+      // Si pas d'utilisateur connecté ou pas d'email sur le chef, on vide
+      if (!currentUser?.email || !chef.email) {
+        setMessages([])
+        setLoadingMessages(false)
+        return
       }
 
       try {
         const params = new URLSearchParams({
-          userEmail: currentUserEmail,
-          chefEmail: chef.email,
-        });
-        const response = await fetch(`http://localhost:5000/api/messages?${params.toString()}`);
-        const data = await response.json();
+          userEmail: currentUser.email,
+          chefEmail: chef.email,   // chef.email existe maintenant dans l'interface
+        })
+
+        const response = await fetch(
+          `http://localhost:5000/api/messages?${params.toString()}`
+        )
+        const data = await response.json()
+
         if (Array.isArray(data.messages)) {
           setMessages(
-            data.messages.map((message: any) => ({
-              id: String(message.id),
-              senderId: message.fromEmail === currentUserEmail ? "me" : chef.id,
-              text: message.content || "",
-              time: message.createdAt || "",
-            })),
-          );
+            data.messages.map((msg: any) => ({
+              id: String(msg.id),
+              // Si le message vient de moi → senderId = "me"
+              // Sinon → senderId = id du chef pour différencier côté affichage
+              senderId: msg.fromEmail === currentUser.email ? "me" : chef.id,
+              text: msg.content || "",
+              time: msg.createdAt || "",
+            }))
+          )
         } else {
-          setMessages([]);
+          setMessages([])
         }
       } catch (error) {
-        console.error("Erreur récupération messages:", error);
-        setMessages([]);
+        console.error("Erreur chargement messages:", error)
+        setMessages([])
+      } finally {
+        setLoadingMessages(false)
       }
-    };
+    }
 
-    fetchMessages();
-  }, [chef.email, chef.id]);
+    fetchMessages()
+  }, [chef.email, chef.id])
 
-  // Scroll automatique vers le bas à chaque nouveau message
+  // Scroll automatique vers le dernier message à chaque mise à jour
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+  }, [messages])
 
   const sendMessage = async () => {
-    const text = input.trim();
-    if (!text) return;
+    const text = input.trim()
+    if (!text) return
 
-    const now = new Date();
-    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`;
+    const currentUser = getCurrentUser()
+    if (!currentUser?.email) return
 
-    const storedUser = localStorage.getItem("chef");
-    const currentUser = storedUser ? JSON.parse(storedUser) : {};
+    const now = new Date()
+    const time = `${now.getHours()}:${String(now.getMinutes()).padStart(2, "0")}`
+
+    // On vide l'input immédiatement pour une meilleure UX
+    setInput("")
 
     try {
       const response = await fetch("http://localhost:5000/api/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          fromEmail: currentUser.email || "",
-          toEmail: chef.email || "",
+          fromEmail: currentUser.email,
+          toEmail: chef.email,   // chef.email existe maintenant
           content: text,
         }),
-      });
-      const data = await response.json();
+      })
+
+      const data = await response.json()
+
       if (!response.ok) {
-        throw new Error(data.error || "Impossible d'envoyer le message.");
+        console.error("Erreur envoi:", data.error)
+        return
       }
 
+      // Ajoute le message envoyé dans la liste locale (pas besoin de re-fetch)
       setMessages((prev) => [
         ...prev,
-        { id: String(data.data.id), senderId: "me", text, time },
-      ]);
+        {
+          id: String(data.data?.id || Date.now()),
+          senderId: "me",
+          text,
+          time,
+        },
+      ])
 
-      if (typeof window !== "undefined") {
-        window.dispatchEvent(new CustomEvent("notificationsUpdated"));
-      }
     } catch (error) {
-      console.error("Erreur envoi message:", error);
+      console.error("Erreur envoi message:", error)
     }
-    setInput("");
-  };
+  }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+      e.preventDefault()
+      sendMessage()
     }
-  };
+  }
 
   return (
     <div className="flex flex-col h-full w-full max-w-2xl bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
       {/* En-tête */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-white">
         <img
@@ -138,8 +168,24 @@ export default function ChatWindow({ chef, onClose }: Props) {
 
       {/* Corps : messages */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50">
+
+        {/* Indicateur de chargement */}
+        {loadingMessages && (
+          <p className="text-center text-sm text-gray-400 mt-4">
+            Chargement des messages...
+          </p>
+        )}
+
+        {/* Aucun message */}
+        {!loadingMessages && messages.length === 0 && (
+          <p className="text-center text-sm text-gray-400 mt-4">
+            Aucun message pour l'instant. Commence la conversation !
+          </p>
+        )}
+
+        {/* Liste des messages */}
         {messages.map((msg) => {
-          const isMe = msg.senderId === "me";
+          const isMe = msg.senderId === "me"
           return (
             <div
               key={msg.id}
@@ -153,17 +199,15 @@ export default function ChatWindow({ chef, onClose }: Props) {
                 }`}
               >
                 <p>{msg.text}</p>
-                <p
-                  className={`text-xs mt-1 ${
-                    isMe ? "text-orange-100" : "text-gray-400"
-                  } text-right`}
-                >
+                <p className={`text-xs mt-1 text-right ${isMe ? "text-orange-100" : "text-gray-400"}`}>
                   {msg.time}
                 </p>
               </div>
             </div>
-          );
+          )
         })}
+
+        {/* Ancre invisible pour le scroll automatique */}
         <div ref={bottomRef} />
       </div>
 
@@ -185,6 +229,7 @@ export default function ChatWindow({ chef, onClose }: Props) {
           Envoyer
         </button>
       </div>
+
     </div>
-  );
+  )
 }

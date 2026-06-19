@@ -1,3 +1,7 @@
+// src/pages/MessagingPage.tsx
+// Page de messagerie : permet aux utilisateurs de discuter en direct avec les chefs.
+// Elle récupère la liste des chefs depuis l'API et affiche les conversations disponibles.
+// Lorsqu'un chef est sélectionné, la fenêtre de chat s'ouvre pour permettre l'échange de messages.
 import { useState, useEffect } from "react";
 import ChatWindow from "../components/ChatWindow";
 

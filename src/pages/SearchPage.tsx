@@ -1,7 +1,7 @@
 // src/pages/SearchPage.tsx
 // Page de recherche de chefs par nom, spécialité, ville ou restaurant.
 // Elle filtre la liste mockée de chefs en temps réel selon les critères saisis.
-
+// Les résultats sont affichés sous forme de cartes avec le nom, la spécialité, la ville et le restaurant du chef.
 import { useState, useEffect } from "react";
 import ChefCard from "../components/ChefCard";
 

@@ -1,4 +1,4 @@
-// src/pages/auth/LoginPage.jsx
+// src/pages/auth/LoginPage.tsx
 
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
@@ -6,24 +6,47 @@ import { useNavigate } from "react-router-dom"
 export default function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")        // ← message d'erreur affiché à l'utilisateur
+  const [loading, setLoading] = useState(false) // ← désactive le bouton pendant la requête
   const navigate = useNavigate()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")       // réinitialise l'erreur à chaque tentative
+    setLoading(true)
+
     try {
       const response = await fetch('http://localhost:5000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       })
+
       const data = await response.json()
+
+      // Si le serveur répond avec une erreur (401, 400...)
+      // data.error contient le message envoyé par api.js
+      // ex: "Email ou password incorrect"
+      if (!response.ok) {
+        setError(data.error || "Erreur de connexion. Vérifie tes identifiants.")
+        setLoading(false)
+        return
+      }
+
+      // Connexion réussie : on sauvegarde l'utilisateur dans localStorage
       if (data.user) {
         localStorage.setItem('chef', JSON.stringify(data.user))
-        localStorage.setItem('userId', data.user.id)
+        localStorage.setItem('userId', String(data.user.id))
         navigate('/feed')
       }
+
     } catch (err) {
+      // Ce bloc se déclenche UNIQUEMENT si le backend est éteint
+      // ou si le réseau est coupé (Failed to fetch)
+      setError("Impossible de contacter le serveur. Vérifie que le backend est lancé sur le port 5000.")
       console.error('Login error:', err)
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -70,11 +93,19 @@ export default function LoginPage() {
             />
           </div>
 
+          {/* Message d'erreur — visible uniquement si error n'est pas vide */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="w-full py-3 bg-[#1A1A2E] text-[#F5F0E8] rounded-xl font-medium text-sm tracking-wide hover:bg-[#2a2a4e] transition"
+            disabled={loading}
+            className="w-full py-3 bg-[#1A1A2E] text-[#F5F0E8] rounded-xl font-medium text-sm tracking-wide hover:bg-[#2a2a4e] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Se connecter
+            {loading ? "Connexion en cours..." : "Se connecter"}
           </button>
         </form>
 

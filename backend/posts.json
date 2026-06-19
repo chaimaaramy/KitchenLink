@@ -1,5 +1,30 @@
 [
   {
+    "id": "post-1781904356137",
+    "chefName": "zaineb Jamai",
+    "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=60",
+    "specialite": "Cuisine italienne",
+    "region": "Casablanca",
+    "title": "Pizza",
+    "text": "so yummy",
+    "image": "https://les-toquets.fr/wp-content/uploads/2023/06/pizza-margherita-2021-08-26-17-21-24-utc-scaled.jpg",
+    "likes": 1,
+    "likedBy": [
+      "ZainebJamai@gmail.com"
+    ],
+    "comments": [
+      {
+        "id": "comment-1781904408954",
+        "author": "zaineb Jamai",
+        "content": "test",
+        "time": "À l'instant"
+      }
+    ],
+    "shares": 0,
+    "createdAt": "À l'instant",
+    "authorEmail": "ZainebJamai@gmail.com"
+  },
+  {
     "id": "post-1781804803627",
     "chefName": "chama ramy",
     "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=60",
@@ -8,7 +33,7 @@
     "title": "basstila",
     "text": "La bastila (ou pastilla) est un plat traditionnel marocain composé d’une tourte croustillante faite avec une pâte fine et garnie généralement de poulet ou de pigeon, d’œufs, d’amandes et d’épices comme la cannelle et le gingembre. Elle a un goût unique qui mélange le sucré et le salé grâce au sucre glace et à la cannelle ajoutés sur le dessus. Ce plat est souvent préparé lors des grandes occasions comme les fêtes ou les mariages au Maroc.",
     "image": "https://www.la-cuisine-marocaine.com/photos-recettes/bastilla-marocaine-poulet.jpg",
-    "likes": 2,
+    "likes": 3,
     "liked": false,
     "comments": [
       {
@@ -28,6 +53,12 @@
         "author": "Marie Durand",
         "content": "Un vrai délice traditionnel marocain 🇲🇦✨ La bastilla est parfaitement croustillante à l’extérieur et fondante à l’intérieur, avec un équilibre sucré-salé incroyable. Un plat riche en saveurs et en finesse !",
         "time": "À l'instant"
+      },
+      {
+        "id": "comment-1781904387432",
+        "author": "zaineb Jamai",
+        "content": "cest trop beau",
+        "time": "À l'instant"
       }
     ],
     "shares": 0,
@@ -35,7 +66,8 @@
     "authorEmail": "ramy@gmail.com",
     "likedBy": [
       "chef1@test.com",
-      "chef2@test.com"
+      "chef2@test.com",
+      "ZainebJamai@gmail.com"
     ]
   },
   {

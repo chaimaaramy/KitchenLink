@@ -1,5 +1,75 @@
 [
   {
+    "id": "notif-1781904387433",
+    "userEmail": "ramy@gmail.com",
+    "type": "comment",
+    "message": "zaineb Jamai a commenté votre publication.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": "post-1781804803627"
+  },
+  {
+    "id": "notif-1781904370397",
+    "userEmail": "ramy@gmail.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": "post-1781804803627"
+  },
+  {
+    "id": "notif-1781904132626",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781904111674",
+    "userEmail": "ramy@gmail.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781904107809",
+    "userEmail": "ramy@gmail.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781904102621",
+    "userEmail": "chef1@test.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1781904088842",
+    "userEmail": "ramy@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
     "id": "notif-1781898626877",
     "userEmail": "chef2@test.com",
     "type": "follow",

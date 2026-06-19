@@ -1,7 +1,8 @@
 // src/pages/ConnectionsList.tsx
 // Page "Mes connexions" : affiche les chefs que l'utilisateur suit
 // et ceux qui le suivent (abonnés), en deux onglets distincts.
-
+// Elle récupère la liste des chefs depuis l'API et filtre les résultats
+// selon les relations de l'utilisateur connecté (abonnements et abonnés).
 import { useState, useEffect } from "react";
 import ChefCard from "../components/ChefCard";
 

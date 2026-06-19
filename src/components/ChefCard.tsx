@@ -1,7 +1,7 @@
 // src/components/ChefCard.tsx
 // Carte affichant le résumé d'un chef : photo, nom, spécialité, ville et bouton Follow.
 // Utilisée dans SearchPage, ExplorePage et ConnectionsList.
-
+// Elle reçoit un objet chef en props et affiche ses informations.
 import { useNavigate } from "react-router-dom";
 import FollowButton from "./FollowButton";
 import type { Chef } from "../data/chefsMock";

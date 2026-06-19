@@ -5,6 +5,9 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App />  
   </StrictMode>,
 )
+// ← JSX : ressemble à du HTML mais c'est du JS
+// React prend le contrôle de cette div et ne la lâche plus jamais
+// Sans ce fichier, rien ne s'affiche

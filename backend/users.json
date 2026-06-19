@@ -30,7 +30,9 @@
     "photo": "",
     "certification": "",
     "badge": "Junior",
-    "followers": []
+    "followers": [
+      "ZainebJamai@gmail.com"
+    ]
   },
   {
     "id": 1781786891585,
@@ -47,6 +49,28 @@
     "badge": "Junior",
     "following": [
       "1781785439589"
+    ],
+    "followers": [
+      "ZainebJamai@gmail.com"
     ]
+  },
+  {
+    "id": 1781903966363,
+    "email": "ZainebJamai@gmail.com",
+    "password": "123456",
+    "name": "zaineb Jamai",
+    "specialite": "Cuisine italienne",
+    "restaurant": "Da Nolita",
+    "ville": "Casablanca",
+    "experience": "4",
+    "bio": "",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior",
+    "badges": [],
+    "followers": [],
+    "following": [
+      "1781786891585",
+      "1781785488324"    ]
   }
 ]

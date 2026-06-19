@@ -2,7 +2,7 @@
 // Bouton Follow / Unfollow.
 // Il lit et écrit dans le localStorage pour simuler une persistance locale
 // sans backend. La clé utilisée est "following" et contient un tableau d'ids.
-
+// Lorsqu'un utilisateur clique sur le bouton, il met à jour le localStorage et l'état du bouton.
 import { useState, useEffect } from "react";
 
 interface Props {

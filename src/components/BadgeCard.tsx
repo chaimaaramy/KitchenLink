@@ -1,4 +1,3 @@
-
 type Props = {
   niveau: "Junior" | "Confirmé" | "Étoilé"
 }

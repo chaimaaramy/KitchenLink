@@ -51,7 +51,7 @@
       "1781785439589"
     ],
     "followers": [
-      "ZainebJamai@gmail.com"
+      "houriaammari11@gmail.com"
     ]
   },
   {
@@ -68,9 +68,51 @@
     "certification": "",
     "badge": "Junior",
     "badges": [],
-    "followers": [],
+    "followers": [
+      "houriaammari11@gmail.com"
+    ],
     "following": [
-      "1781786891585",
-      "1781785488324"    ]
+      "1782065914269",
+      "1781785488324"
+    ]
+  },
+  {
+    "id": 1782065914269,
+    "email": "houriaammari11@gmail.com",
+    "password": "123456",
+    "name": "Houria Ammari",
+    "specialite": "Cuisine asiatique",
+    "restaurant": "Azitalia",
+    "ville": "Casablanca",
+    "experience": "9",
+    "bio": "",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior",
+    "badges": [],
+    "followers": [
+      "ZainebJamai@gmail.com"
+    ],
+    "following": [
+      "1781903966363",
+      "1781786891585"
+    ]
+  },
+  {
+    "id": 1782213624876,
+    "email": "Zaineb@gmail.com",
+    "password": "123456",
+    "name": "Jamai z",
+    "specialite": "Pâtisserie",
+    "restaurant": "Amoud",
+    "ville": "London",
+    "experience": "7",
+    "bio": "",
+    "photo": "",
+    "certification": "",
+    "badge": "Junior",
+    "badges": [],
+    "followers": [],
+    "following": []
   }
 ]

@@ -1,4 +1,6 @@
+// src/components/PostCard.tsx
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 import CommentSection from "./CommentSection"
 import LikeButton from "./LikeButton"
 
@@ -12,6 +14,7 @@ type CommentData = {
 type PostData = {
   id: string
   chefName: string
+  chefId?: string   // ← ajouté pour la navigation vers le profil
   avatar: string
   specialite: string
   region: string
@@ -35,15 +38,37 @@ type Props = {
 
 export default function PostCard({ post, onLike, onComment, onShare, onDelete }: Props) {
   const [showComments, setShowComments] = useState(false)
+  const navigate = useNavigate()
+
+  // Navigation vers le profil public du chef auteur de la publication
+  const goToProfile = () => {
+    if (post.chefId) {
+      navigate(`/public-profile/${post.chefId}`)
+    }
+  }
 
   return (
     <article className="overflow-hidden rounded-[2rem] bg-white shadow-sm">
       <div className="flex items-center gap-4 border-b border-[#ece5d8] px-6 py-5">
-        <img src={post.avatar} alt={post.chefName} className="h-14 w-14 rounded-full object-cover" />
+
+        {/* Avatar cliquable */}
+        <img
+          src={post.avatar}
+          alt={post.chefName}
+          onClick={goToProfile}
+          className={`h-14 w-14 rounded-full object-cover ${post.chefId ? "cursor-pointer hover:opacity-80 transition-opacity" : ""}`}
+        />
+
         <div className="flex-1">
           <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-[#1A1A2E]">{post.chefName}</h3>
+              {/* Nom du chef cliquable */}
+              <h3
+                onClick={goToProfile}
+                className={`text-lg font-semibold text-[#1A1A2E] ${post.chefId ? "cursor-pointer hover:text-[#C49A3C] transition-colors" : ""}`}
+              >
+                {post.chefName}
+              </h3>
               <p className="text-sm text-gray-500">{post.specialite} • {post.region}</p>
             </div>
             <span className="rounded-full bg-[#F7F2E8] px-3 py-1 text-xs font-medium text-[#C49A3C]">
@@ -59,7 +84,13 @@ export default function PostCard({ post, onLike, onComment, onShare, onDelete }:
           <p className="mt-2 text-sm leading-6 text-gray-600">{post.text}</p>
         </div>
 
-        <img src={post.image} alt={post.title} className="h-[300px] w-full rounded-[1.7rem] object-cover" />
+        {post.image && (
+          <img
+            src={post.image}
+            alt={post.title}
+            className="h-[300px] w-full rounded-[1.7rem] object-cover"
+          />
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#ece5d8] px-6 py-4">

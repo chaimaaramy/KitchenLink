@@ -1,7 +1,4 @@
-// src/App.tsx — VERSION MISE À JOUR
-// Ajout des routes du module Réseau & Recherche (Zaineb)
-// Les nouvelles routes sont marquées avec le commentaire // [ZAINEB]
-
+// src/App.tsx
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Routes existantes (équipe)
@@ -14,7 +11,6 @@ import PublicProfileView from "./profile/PublicProfileView";
 import FeedPage from "./pages/FeedPage";
 
 // [ZAINEB] Nouvelles routes — module Réseau & Recherche
-// PageLayout est un composant qui contient la barre de navigation et le footer
 import SearchPage from "./pages/SearchPage";
 import ExplorePage from "./pages/ExplorePage";
 import MessagingPage from "./pages/MessagingPage";
@@ -25,13 +21,19 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Routes existantes */}
+        {/* Pages sans navbar (auth) */}
         <Route path="/" element={<LoginPage />} />
         <Route path="/RegisterPage" element={<RegisterPage />} />
+
+        {/* Pages avec navbar (PageLayout) */}
         <Route element={<PageLayout />}>
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/public-profile/:chefId" element={<PublicProfileView />} />
           <Route path="/feed" element={<FeedPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/edit-profile" element={<EditProfileForm />} />
+          <Route path="/badge" element={<BadgeCard niveau="Confirmé" />} />
+          <Route path="/public-profile/:chefId" element={<PublicProfileView />} />
+
+          {/* [ZAINEB] */}
           <Route path="/search" element={<SearchPage />} />
           <Route path="/explore" element={<ExplorePage />} />
           <Route path="/messages" element={<MessagingPage />} />

@@ -1,88 +1,87 @@
 // src/pages/ConnectionsList.tsx
-// Page "Mes connexions" : affiche les chefs que l'utilisateur suit
-// et ceux qui le suivent (abonnés), en deux onglets distincts.
-// Elle récupère la liste des chefs depuis l'API et filtre les résultats
-// selon les relations de l'utilisateur connecté (abonnements et abonnés).
-import { useState, useEffect } from "react";
-import ChefCard from "../components/ChefCard";
+import { useState, useEffect } from "react"
+import ChefCard from "../components/ChefCard"
+import type { Chef } from "../data/chefsMock"  // ← import du type officiel, fini le conflit
 
-type Tab = "following" | "followers";
-
-type Chef = {
-  id: string;
-  name: string;
-  specialty: string;
-  restaurant: string;
-  city: string;
-  avatar: string;
-  bio: string;
-  followers: string[];
-  following: string[];
-  email?: string;
-};
+type Tab = "following" | "followers"
 
 export default function ConnectionsList() {
-  const [activeTab, setActiveTab] = useState<Tab>("following");
-  const [chefs, setChefs] = useState<Chef[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("following")
+  const [chefs, setChefs] = useState<Chef[]>([])
+  const [loading, setLoading] = useState(false)
+
+  // Récupère l'utilisateur connecté une seule fois
+  const currentUser = (() => {
+    try {
+      const stored = localStorage.getItem("chef")
+      return stored ? JSON.parse(stored) : null
+    } catch { return null }
+  })()
+
+  const currentUserId = currentUser ? String(currentUser.id) : ""
+  const currentUserEmail = currentUser?.email || ""
+
+  // Liste des ids que l'utilisateur connecté suit (stockée dans son profil localStorage)
+  const currentFollowingIds: string[] = Array.isArray(currentUser?.following)
+    ? currentUser.following.map((id: any) => String(id))
+    : []
 
   useEffect(() => {
     const fetchChefs = async () => {
-      setLoading(true);
+      setLoading(true)
       try {
-        const res = await fetch("http://localhost:5000/api/search");
-        const data = await res.json();
+        const res = await fetch("http://localhost:5000/api/search")
+        const data = await res.json()
         if (Array.isArray(data.chefs)) {
-          setChefs(
-            data.chefs.map((user: any) => ({
-              id: String(user.id),
-              name: user.name || "",
-              specialty: user.specialite || "",
-              restaurant: user.restaurant || "",
-              city: user.ville || "",
-              avatar: user.photo || "https://i.pravatar.cc/150?img=47",
-              bio: user.bio || "",
-              followers: Array.isArray(user.followers) ? user.followers : [],
-              following: Array.isArray(user.following) ? user.following : [],
-              email: user.email || "",
-            })),
-          );
+          const mapped: Chef[] = data.chefs
+            .filter((u: any) => String(u.id) !== currentUserId) // on s'exclut soi-même
+            .map((u: any) => ({
+              id: String(u.id),
+              name: u.name || "",
+              specialty: u.specialite || "",
+              restaurant: u.restaurant || "",
+              city: u.ville || "",
+              avatar: u.photo || "https://i.pravatar.cc/150?img=47",
+              bio: u.bio || "",
+              email: u.email || "",
+              followers: Array.isArray(u.followers)
+                ? u.followers.map((id: any) => String(id))
+                : [],
+              following: Array.isArray(u.following)
+                ? u.following.map((id: any) => String(id))
+                : [],
+            }))
+          setChefs(mapped)
         }
       } catch (error) {
-        console.error("Erreur chargement connexions :", error);
+        console.error("Erreur chargement connexions :", error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
+    fetchChefs()
+  }, [])
 
-    fetchChefs();
-  }, []);
+  // Abonnements : chefs que MOI je suis
+  // Un chef est dans "following" si son id est dans la liste following de l'utilisateur connecté
+  const following = chefs.filter((chef) =>
+    currentFollowingIds.includes(String(chef.id))
+  )
 
-  const storedUser = localStorage.getItem("chef");
-  const currentUser = storedUser ? JSON.parse(storedUser) : null;
-  const currentUserEmail = currentUser ? currentUser.email : "";
-  const currentUserId = currentUser ? String(currentUser.id) : "";
-  const currentFollowing = Array.isArray(currentUser?.following)
-    ? currentUser.following.map((id: any) => String(id))
-    : [];
+  // Abonnés : chefs qui ME suivent
+  // Un chef me suit si MON id est dans sa liste followers
+  const followers = chefs.filter((chef) =>
+    chef.followers.includes(currentUserId) ||
+    chef.followers.includes(currentUserEmail)
+  )
 
-  const following = chefs.filter((chef) => currentFollowing.includes(String(chef.id)));
-  const followers = chefs.filter((chef) => {
-    const followsById = Array.isArray(chef.following)
-      ? chef.following.map((id: any) => String(id)).includes(currentUserId)
-      : false;
-    const followsByEmail = Array.isArray(chef.followers)
-      ? chef.followers.includes(currentUserEmail)
-      : false;
-    return chef.email !== currentUserEmail && (followsById || followsByEmail);
-  });
-
-  const displayed = activeTab === "following" ? following : followers;
+  const displayed = activeTab === "following" ? following : followers
 
   return (
     <div className="min-h-[calc(100vh-6rem)] bg-gray-50 p-6">
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Mes connexions</h1>
 
+      {/* Onglets */}
       <div className="flex gap-4 mb-6 border-b border-gray-200">
         <button
           onClick={() => setActiveTab("following")}
@@ -106,6 +105,7 @@ export default function ConnectionsList() {
         </button>
       </div>
 
+      {/* Liste */}
       {loading ? (
         <p className="text-gray-500 text-center mt-10">Chargement...</p>
       ) : displayed.length === 0 ? (
@@ -122,5 +122,5 @@ export default function ConnectionsList() {
         </div>
       )}
     </div>
-  );
+  )
 }

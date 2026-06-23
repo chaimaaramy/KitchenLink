@@ -1,5 +1,205 @@
 [
   {
+    "id": "notif-1782213544395",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212731087",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212718080",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212697839",
+    "userEmail": "houriaammari11@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212687248",
+    "userEmail": "houriaammari11@gmail.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212623966",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212455930",
+    "userEmail": "chef1@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782212338393",
+    "userEmail": "houriaammari11@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782070088699",
+    "userEmail": "ramy@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782070069703",
+    "userEmail": "houriaammari11@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782069756015",
+    "userEmail": "chef1@test.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": "post-1781804600647"
+  },
+  {
+    "id": "notif-1782069752030",
+    "userEmail": "ZainebJamai@gmail.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": "post-1781904356137"
+  },
+  {
+    "id": "notif-1782069747397",
+    "userEmail": "ramy@gmail.com",
+    "type": "like",
+    "message": "Votre publication a reçu un nouveau like.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": "post-1781804803627"
+  },
+  {
+    "id": "notif-1782069700099",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782069677069",
+    "userEmail": "ramy@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782069463177",
+    "userEmail": "houriaammari11@gmail.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782066929425",
+    "userEmail": "ramy@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782066339707",
+    "userEmail": "chef2@test.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": false,
+    "fromEmail": "ZainebJamai@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782065982573",
+    "userEmail": "ZainebJamai@gmail.com",
+    "type": "message",
+    "message": "Vous avez reçu un nouveau message.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": null
+  },
+  {
+    "id": "notif-1782065971185",
+    "userEmail": "ZainebJamai@gmail.com",
+    "type": "follow",
+    "message": "Vous avez un nouvel abonné.",
+    "time": "À l'instant",
+    "read": true,
+    "fromEmail": "houriaammari11@gmail.com",
+    "relatedPostId": null
+  },
+  {
     "id": "notif-1781904387433",
     "userEmail": "ramy@gmail.com",
     "type": "comment",

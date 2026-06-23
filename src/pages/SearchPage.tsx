@@ -1,23 +1,10 @@
 // src/pages/SearchPage.tsx
 // Page de recherche de chefs par nom, spécialité, ville ou restaurant.
-// Elle filtre la liste mockée de chefs en temps réel selon les critères saisis.
-// Les résultats sont affichés sous forme de cartes avec le nom, la spécialité, la ville et le restaurant du chef.
+// Connectée au backend via GET /api/search
+
 import { useState, useEffect } from "react";
 import ChefCard from "../components/ChefCard";
-
-type Chef = {
-  id: string;
-  name: string;
-  specialty: string;
-  restaurant: string;
-  city: string;
-  avatar: string;
-  bio: string;
-  followers: string[];
-  following: string[];
-  email?: string;
-};
-
+import type { Chef } from "../data/chefsMock"; // ← on importe le type officiel
 
 export default function SearchPage() {
   const [query, setQuery] = useState("");
@@ -36,23 +23,28 @@ export default function SearchPage() {
         if (specialty) params.append("specialite", specialty);
         if (city) params.append("ville", city);
         if (restaurant) params.append("restaurant", restaurant);
-        const res = await fetch(`http://localhost:5000/api/search?${params.toString()}`);
+
+        const res = await fetch(
+          `http://localhost:5000/api/search?${params.toString()}`
+        );
         const data = await res.json();
+
         if (Array.isArray(data.chefs)) {
-          setResults(
-            data.chefs.map((user: any) => ({
-              id: String(user.id),
-              name: user.name || "",
-              specialty: user.specialite || "",
-              restaurant: user.restaurant || "",
-              city: user.ville || "",
-              avatar: user.photo || "https://i.pravatar.cc/150?img=47",
-              bio: user.bio || "",
-              followers: Array.isArray(user.followers) ? user.followers : [],
-              following: Array.isArray(user.following) ? user.following : [],
-              email: user.email || "",
-            })),
-          );
+          // On mappe la réponse backend vers le type Chef de chefsMock
+          // Le backend utilise "specialite" et "ville", le type Chef utilise "specialty" et "city"
+          const mapped: Chef[] = data.chefs.map((user: any) => ({
+            id: String(user.id),
+            name: user.name || "",
+            specialty: user.specialite || "",   // ← renommage backend → frontend
+            restaurant: user.restaurant || "",
+            city: user.ville || "",              // ← renommage backend → frontend
+            avatar: user.photo || "https://i.pravatar.cc/150?img=47",
+            bio: user.bio || "",
+            email: user.email || "",             // ← présent dans l'interface Chef
+            followers: Array.isArray(user.followers) ? user.followers : [],
+            following: Array.isArray(user.following) ? user.following : [],
+          }));
+          setResults(mapped);
         } else {
           setResults([]);
         }
@@ -66,9 +58,6 @@ export default function SearchPage() {
 
     fetchChefs();
   }, [query, specialty, city, restaurant]);
-
-  // Filtrage en temps réel : on compare chaque champ en minuscule pour ignorer la casse
-  const displayedResults = results;
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -85,7 +74,7 @@ export default function SearchPage() {
         className="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-orange-400"
       />
 
-      {/* Filtres secondaires côte à côte */}
+      {/* Filtres secondaires */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
         <input
           type="text"
@@ -113,13 +102,13 @@ export default function SearchPage() {
       {/* Résultats */}
       {loading ? (
         <p className="text-gray-500 text-center mt-10">Recherche en cours...</p>
-      ) : displayedResults.length === 0 ? (
+      ) : results.length === 0 ? (
         <p className="text-gray-500 text-center mt-10">
           Aucun chef trouvé. Essaie d'autres mots-clés.
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {displayedResults.map((chef) => (
+          {results.map((chef) => (
             <ChefCard key={chef.id} chef={chef} />
           ))}
         </div>

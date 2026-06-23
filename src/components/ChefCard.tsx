@@ -7,7 +7,7 @@ import FollowButton from "./FollowButton";
 import type { Chef } from "../data/chefsMock";
 
 interface Props {
-  chef: Chef;
+  chef: Chef;  // Tu indiques que la prop 'chef' doit respecter la structure du type 'Chef'
 }
 
 export default function ChefCard({ chef }: Props) {
